@@ -34,4 +34,4 @@ class Memory(models.Model):
     computer = models.ForeignKey(Computer, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.memory_type + " " + self.memory_size
+        return self.memory_size
