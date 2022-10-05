@@ -1,11 +1,14 @@
 from django.db import models
 
+from default.models import Brand
+
 
 # Create your models here.
 
 class Computer(models.Model):
     model_number = models.CharField(max_length=100)  # model of computer
     serial_number = models.CharField(max_length=100)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.model_number
