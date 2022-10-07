@@ -1,6 +1,6 @@
 from django.db import models
 
-from default.models import Brand
+from default.models import Brand, OS
 
 
 # Create your models here.
@@ -35,6 +35,7 @@ class Computer(models.Model):
     cpu = models.ForeignKey(CPU, on_delete=models.CASCADE, related_name='computer_cpu')
     disk = models.ForeignKey(Disk, on_delete=models.CASCADE, related_name='computer_disk')
     memory = models.ForeignKey(Memory, on_delete=models.CASCADE, related_name='computer_memory')
+    os = models.ForeignKey(OS, on_delete=models.CASCADE, related_name='computer_os')
 
     def __str__(self):
         return self.model_number
