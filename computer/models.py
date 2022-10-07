@@ -5,19 +5,9 @@ from default.models import Brand
 
 # Create your models here.
 
-class Computer(models.Model):
-    model_number = models.CharField(max_length=100)  # model of computer
-    serial_number = models.CharField(max_length=100)
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.model_number
-
-
 class CPU(models.Model):
     cpu_type = models.CharField(max_length=100)  # model of cpu
     cpu_generation = models.CharField(max_length=100)
-    computer = models.ForeignKey(Computer, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.cpu_type + " " + self.cpu_generation
@@ -26,7 +16,6 @@ class CPU(models.Model):
 class Disk(models.Model):
     disk_type = models.CharField(max_length=100)  # model of disk
     disk_size = models.CharField(max_length=100)
-    computer = models.ForeignKey(Computer, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.disk_type + " " + self.disk_size
@@ -34,7 +23,18 @@ class Disk(models.Model):
 
 class Memory(models.Model):
     memory_size = models.CharField(max_length=100)
-    computer = models.ForeignKey(Computer, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.memory_size
+
+
+class Computer(models.Model):
+    model_number = models.CharField(max_length=100)  # model of computer
+    serial_number = models.CharField(max_length=100)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    cpu = models.ForeignKey(CPU, on_delete=models.CASCADE, related_name='computer_cpu')
+    disk = models.ForeignKey(Disk, on_delete=models.CASCADE, related_name='computer_disk')
+    memory = models.ForeignKey(Memory, on_delete=models.CASCADE, related_name='computer_memory')
+
+    def __str__(self):
+        return self.model_number
