@@ -5,10 +5,12 @@ pip==22.2.2
 setuptools==65.3.0
 sqlparse==0.4.2
 wheel==0.37.1
-djangorestframework
+djangorestframework~=3.14.0
 rest_condition
 django-cors-headers
 django-filter
 django-rest-auth
 djangorestframework-simplejwt
 psycopg2
+spacy~=3.4.1
+ngram
