@@ -6,8 +6,7 @@ from default.models import Brand, OS
 from .serializers import ProductSerializer
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 
-
-# osList = ["Freedos", "Windows", "MacOS", "Linux"]
+osList = ["Freedos", "Windows", "MacOS", "Linux"]
 
 
 class ProductListCreate(ListCreateAPIView):
@@ -31,16 +30,6 @@ class ProductReadyToDeployList(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    """ def check_duplicate(self, os):
-        for system in osList:
-            result = NGram.compare(system, os.strip())
-            print(result)
-            if result > 0.3:
-                print(system)
-                return system
-            else:
-                return "Other" """
-
     def get_queryset(self):
         cpu_type = self.request.query_params.get('cpu_type', None)
         cpu_generation = self.request.query_params.get('cpu_generation', None)
@@ -55,6 +44,8 @@ class ProductReadyToDeployList(ListAPIView):
         price = self.request.query_params.get('price', None)
         website = self.request.query_params.get('website', None)
         score = self.request.query_params.get('score', None)
+        screen_size = self.request.query_params.get('screen_size', None)
+        image = self.request.query_params.get('image', None)
 
         if CPU.objects.filter(cpu_type=cpu_type, cpu_generation=cpu_generation).exists():
             print('CPU exists')
@@ -84,29 +75,37 @@ class ProductReadyToDeployList(ListAPIView):
             print('Brand does not exist')
             created_brand = Brand.objects.create(name=brand)
 
-        if OS.objects.filter(name=os).exists():
+        if OS.objects.filter(name=self.ngram_compare(os)).exists():
             print('OS exists')
-            created_os = OS.objects.get(name=os)
+            created_os = OS.objects.get(name=self.ngram_compare(os))
         else:
             print('OS does not exist')
-            created_os = OS.objects.create(name=os)
+            created_os = OS.objects.create(name=self.ngram_compare(os))
 
         if Computer.objects.filter(model_number=model_number, serial_number=serial_number, brand=created_brand,
-                                   cpu=created_cpu, disk=created_disk, memory=created_memory, os=created_os).exists():
+                                   cpu=created_cpu, disk=created_disk, memory=created_memory, os=created_os, screen_size=screen_size).exists():
             print('Computer exists')
             created_computer = Computer.objects.get(model_number=model_number, serial_number=serial_number,
                                                     brand=created_brand, cpu=created_cpu, disk=created_disk,
-                                                    memory=created_memory, os=created_os)
+                                                    memory=created_memory, os=created_os, screen_size=screen_size)
         else:
             print('Computer does not exist')
             created_computer = Computer.objects.create(model_number=model_number, serial_number=serial_number,
                                                        brand=created_brand, cpu=created_cpu, disk=created_disk,
-                                                       memory=created_memory, os=created_os)
+                                                       memory=created_memory, os=created_os, screen_size=screen_size)
 
         if Product.objects.filter(computer=created_computer, url=url).exists():
             print('Product exists')
-            return Product.objects.filter(computer=created_computer, url=url, os=created_os)
+            return Product.objects.filter(computer=created_computer, url=url)
         else:
             print('Product does not exist')
             Product.objects.create(computer=created_computer, url=url, price=price, website=website, score=score)
-            return Product.objects.filter(computer=created_computer, url=url, website=website)
+            return Product.objects.filter(computer=created_computer, url=url, website=website, image=image)
+
+    def ngram_compare(self, os):
+        for system in osList:
+            result = NGram.compare(system.lower(), os.replace(" ", ""))
+            if result > 0.2:
+                return system
+            else:
+                pass

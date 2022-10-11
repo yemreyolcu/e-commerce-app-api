@@ -36,6 +36,7 @@ class Computer(models.Model):
     disk = models.ForeignKey(Disk, on_delete=models.CASCADE, related_name='computer_disk')
     memory = models.ForeignKey(Memory, on_delete=models.CASCADE, related_name='computer_memory')
     os = models.ForeignKey(OS, on_delete=models.CASCADE, related_name='computer_os')
+    screen_size = models.CharField(max_length=100, default="")
 
     def __str__(self):
         return self.model_number

@@ -14,3 +14,4 @@ djangorestframework-simplejwt
 psycopg2
 spacy~=3.4.1
 ngram
+pillow

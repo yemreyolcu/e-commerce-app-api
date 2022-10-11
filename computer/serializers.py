@@ -13,7 +13,8 @@ class ComputerSerializer(ModelSerializer):
     class Meta:
         model = Computer
         fields = (
-            'id', 'model_number', 'serial_number', 'brand', 'cpu', 'disk', 'memory', 'os', 'os_data', 'brand_data',
+            'id', 'model_number', 'serial_number', 'brand', 'cpu', 'disk', 'memory', 'os', 'screen_size', 'os_data',
+            'brand_data',
             'cpu_data', 'disk_data', 'memory_data')
 
     def get_brand_data(self, obj):
