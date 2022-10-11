@@ -10,7 +10,8 @@ class Product(models.Model):
     price = models.FloatField(default=0)
     website = models.CharField(max_length=100, default="")
     url = models.CharField(max_length=255, default="")
-    image = models.ImageField(upload_to='product_images', default='product_images/default.png')
+    image = models.TextField(default="", null=True)
+    post_image = models.ImageField(upload_to='images/', default="")
 
     def __str__(self):
         return self.computer.brand.name

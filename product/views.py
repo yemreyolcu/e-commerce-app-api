@@ -83,7 +83,8 @@ class ProductReadyToDeployList(ListAPIView):
             created_os = OS.objects.create(name=self.ngram_compare(os))
 
         if Computer.objects.filter(model_number=model_number, serial_number=serial_number, brand=created_brand,
-                                   cpu=created_cpu, disk=created_disk, memory=created_memory, os=created_os, screen_size=screen_size).exists():
+                                   cpu=created_cpu, disk=created_disk, memory=created_memory, os=created_os,
+                                   screen_size=screen_size).exists():
             print('Computer exists')
             created_computer = Computer.objects.get(model_number=model_number, serial_number=serial_number,
                                                     brand=created_brand, cpu=created_cpu, disk=created_disk,
@@ -99,13 +100,18 @@ class ProductReadyToDeployList(ListAPIView):
             return Product.objects.filter(computer=created_computer, url=url)
         else:
             print('Product does not exist')
-            Product.objects.create(computer=created_computer, url=url, price=price, website=website, score=score)
+            Product.objects.create(computer=created_computer, url=url, price=price, website=website, score=score,
+                                   image=image)
             return Product.objects.filter(computer=created_computer, url=url, website=website, image=image)
 
     def ngram_compare(self, os):
+        print(os)
         for system in osList:
             result = NGram.compare(system.lower(), os.replace(" ", ""))
-            if result > 0.2:
+            if os.lower() == 'ubuntu':
+                system = 'Linux'
+                return system
+            elif result > 0.2:
                 return system
             else:
                 pass

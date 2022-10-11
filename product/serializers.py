@@ -8,7 +8,7 @@ class ProductSerializer(ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'computer', 'score', 'price', 'website', 'image', 'computer_data']
+        fields = ['id', 'computer', 'score', 'price', 'website', 'image', 'post_image', 'computer_data']
 
     def get_computer_data(self, obj):
         return ComputerSerializer(obj.computer).data
