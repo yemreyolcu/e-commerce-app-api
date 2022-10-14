@@ -6,7 +6,8 @@ from default.models import Brand, OS
 from .serializers import ProductSerializer
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 
-osList = ["Freedos", "Windows", "MacOS", "Linux"]
+osList = ["Freedos", "Windows", "MacOS", "Linux", "ChromeOS"]
+brands = ["Dell", "Acer", "Apple", "Asus", "HP", "Monster", "Lenovo", "Msi"]
 
 
 class ProductListCreate(ListCreateAPIView):
@@ -47,6 +48,13 @@ class ProductReadyToDeployList(ListAPIView):
         screen_size = self.request.query_params.get('screen_size', None)
         image = self.request.query_params.get('image', None)
 
+        if OS.objects.filter(name=self.ngram_compare(os)).exists():
+            print('OS exists')
+            created_os = OS.objects.get(name=self.ngram_compare(os))
+        else:
+            print('OS does not exist')
+            created_os = OS.objects.create(name=self.ngram_compare(os))
+
         if CPU.objects.filter(cpu_type=cpu_type, cpu_generation=cpu_generation).exists():
             print('CPU exists')
             created_cpu = CPU.objects.get(cpu_type=cpu_type, cpu_generation=cpu_generation)
@@ -68,19 +76,12 @@ class ProductReadyToDeployList(ListAPIView):
             print('Memory does not exist')
             created_memory = Memory.objects.create(memory_size=memory_size)
 
-        if Brand.objects.filter(name=brand).exists():
+        if Brand.objects.filter(name=self.ngram_compare_brand(given_brand=brand)).exists():
             print('Brand exists')
-            created_brand = Brand.objects.get(name=brand)
+            created_brand = Brand.objects.get(name=self.ngram_compare_brand(given_brand=brand))
         else:
             print('Brand does not exist')
-            created_brand = Brand.objects.create(name=brand)
-
-        if OS.objects.filter(name=self.ngram_compare(os)).exists():
-            print('OS exists')
-            created_os = OS.objects.get(name=self.ngram_compare(os))
-        else:
-            print('OS does not exist')
-            created_os = OS.objects.create(name=self.ngram_compare(os))
+            created_brand = Brand.objects.create(name=self.ngram_compare_brand(given_brand=brand))
 
         if Computer.objects.filter(model_number=model_number, serial_number=serial_number, brand=created_brand,
                                    cpu=created_cpu, disk=created_disk, memory=created_memory, os=created_os,
@@ -107,11 +108,19 @@ class ProductReadyToDeployList(ListAPIView):
     def ngram_compare(self, os):
         print(os)
         for system in osList:
-            result = NGram.compare(system.lower(), os.replace(" ", ""))
+            result = NGram.compare(system.lower(), os.lower().replace(" ", ""))
+            print(result)
             if os.lower() == 'ubuntu':
                 system = 'Linux'
                 return system
-            elif result > 0.2:
+            elif result > 0.15:
                 return system
-            else:
-                pass
+
+    def ngram_compare_brand(self, given_brand):
+        if given_brand.lower().strip() == 'monster':
+            return 'MONSTER'
+        for brand in brands:
+            result = NGram.compare(brand.lower(), given_brand.lower())
+            print(result)
+            if result > 0.1:
+                return brand.upper()

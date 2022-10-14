@@ -9,7 +9,7 @@ class Product(models.Model):
     score = models.FloatField(default=0)
     price = models.FloatField(default=0)
     website = models.CharField(max_length=100, default="")
-    url = models.CharField(max_length=255, default="")
+    url = models.CharField(max_length=555, default="")
     image = models.TextField(default="", null=True)
     post_image = models.ImageField(upload_to='images/', default="")
 
