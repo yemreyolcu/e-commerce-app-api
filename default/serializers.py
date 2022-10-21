@@ -8,6 +8,7 @@ class BrandSerializer(ModelSerializer):
         fields = '__all__'
 
 
+
 class OSSerializer(ModelSerializer):
     class Meta:
         model = OS

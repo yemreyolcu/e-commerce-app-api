@@ -1,9 +1,7 @@
 from django.urls import path
 from .views import ComputerListCreate, ComputerRetrieveUpdate, ComputerRetrieveDestroy, ComputerRetrieve, \
     CPUListCreateAPIView, CPURetrieve, CPUUpdateAPIView, CPUDeleteAPIView, DiskListCreateAPIView, DiskRetrieve, \
-    DiskUpdateAPIView, DiskDeleteAPIView, MemoryListCreateAPIView, MemoryRetrieve, MemoryUpdateAPIView, \
-    MemoryDeleteAPIView
-
+    DiskUpdateAPIView, DiskDeleteAPIView, MemoryListCreateAPIView, MemoryRetrieve, MemoryUpdateAPIView, MemoryDeleteAPIView
 urlpatterns = [
     path('computerlistcreate/', ComputerListCreate.as_view()),
     path('computerretrieveupdate/<int:pk>/', ComputerRetrieveUpdate.as_view()),

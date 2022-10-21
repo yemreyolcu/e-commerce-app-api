@@ -34,15 +34,23 @@ class ComputerSerializer(ModelSerializer):
 
 
 class CPUSerializer(ModelSerializer):
+    full_cpu = SerializerMethodField(method_name='get_full_cpu')
     class Meta:
         model = CPU
-        fields = ['id', 'cpu_type', 'cpu_generation']
+        fields = ['id', 'cpu_type', 'cpu_generation', 'full_cpu']
+
+    def get_full_cpu(self, obj):
+        return obj.cpu_type + " " + obj.cpu_generation
 
 
 class DiskSerializer(ModelSerializer):
+    full_disk = SerializerMethodField(method_name='get_full_disk')
     class Meta:
         model = Disk
-        fields = ['id', 'disk_type', 'disk_size']
+        fields = ['id', 'disk_type', 'disk_size', 'full_disk']
+
+    def get_full_disk(self, obj):
+        return obj.disk_type + " " + obj.disk_size
 
 
 class MemorySerializer(ModelSerializer):
