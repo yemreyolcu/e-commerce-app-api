@@ -4,9 +4,39 @@ from .serializers import ComputerSerializer, CPUSerializer, DiskSerializer, Memo
 
 
 class ComputerListCreate(ListCreateAPIView):
-    queryset = Computer.objects.all()
     serializer_class = ComputerSerializer
+    queryset = Computer.objects.all()
 
+    def perform_create(self, serializer):
+        mySize = self.request.data.get('screen_size') + '"'
+        serializer.save(screen_size=mySize)
+        model_number = self.request.data.get('model_number')
+        serial_number = self.request.data.get('serial_number')
+        brand = self.request.data.get('brand')
+        cpu = self.request.data.get('cpu')
+        disk = self.request.data.get('disk')
+        memory = self.request.data.get('memory')
+        os = self.request.data.get('os')
+        print(model_number, serial_number, brand, cpu, disk, memory, os, mySize)
+
+        if Computer.objects.filter(model_number=model_number, serial_number=serial_number, brand=brand, cpu=cpu,
+                                   disk=disk, memory=memory, os=os, screen_size=mySize).exists():
+            print("Computer already exists")
+            sameComputers = Computer.objects.filter(model_number=model_number, serial_number=serial_number, brand=brand,
+                                                    cpu=cpu, disk=disk, memory=memory, os=os, screen_size=mySize)
+            print(sameComputers)
+            if sameComputers.count() > 1:
+                print("There are more than one same computers")
+                for computer in enumerate(sameComputers):
+                    if computer[0] == 0:
+                        print("First computer")
+                        continue
+                    else:
+                        print("Other computer")
+                        computer[1].delete()
+
+        else:
+            print("Computer does not exist")
 
 class ComputerRetrieveUpdate(RetrieveUpdateAPIView):
     queryset = Computer.objects.all()

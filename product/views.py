@@ -4,17 +4,21 @@ from .models import Product
 from computer.models import Computer, CPU, Disk, Memory
 from default.models import Brand, OS
 from .serializers import ProductSerializer
-from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, \
+    CreateAPIView
 
 osList = ["Freedos", "Windows", "MacOS", "Linux", "ChromeOS"]
 brands = ["Dell", "Acer", "Apple", "Asus", "HP", "Monster", "Lenovo", "Msi"]
 
 
-class ProductListCreate(ListCreateAPIView):
-    queryset = Product.objects.all()
+class ProductCreateAPIView(CreateAPIView):
     serializer_class = ProductSerializer
+    queryset = Product.objects.all()
 
 
+class ProductListCreate(ListCreateAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
 
 
 class ProductRetrieveAPIView(RetrieveAPIView):
@@ -174,52 +178,9 @@ class SameProductsListaToModelNumber(ListAPIView):
 
 
 class SameProductsListaToModelNumberIncludes(ListAPIView):
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    def get_queryset(self):
-        results = []
-        choosenProducts = []
-        search = self.request.query_params.get('search', None)
-
-        def findMinPrice(products):
-            if len(products) == 0:
-                return False
-            x = products[0]
-            for i in range(1, len(products)):
-                if x.price > products[i].price:
-                    x = products[i]
-            return x
-
-        if not search:
-            return Product.objects.all()
-        for product in Product.objects.all():
-            searchInput = search.lower().replace(" ", "").translate(str.maketrans('', '', string.punctuation))
-            comparedInput = product.computer.model_number.lower().replace(" ", "").translate(
-                str.maketrans('', '', string.punctuation))
-            print(searchInput, comparedInput)
-            if searchInput in comparedInput:
-                results.append(product)
-
-        trendyol = [i for i in results if i.website.lower() == 'Trendyol'.lower()]
-        vatan = [i for i in results if i.website.lower() == 'Vatan Bilgisayar'.lower()]
-        n11 = [i for i in results if i.website.lower() == 'n11'.lower()]
-        teknosa = [i for i in results if i.website.lower() == 'Teknosa'.lower()]
-
-        choosenTrendyol = findMinPrice(trendyol)
-        choosenVatan = findMinPrice(vatan)
-        choosenN11 = findMinPrice(n11)
-        choosenTeknosa = findMinPrice(teknosa)
-
-        if choosenTrendyol:
-            choosenProducts.append(choosenTrendyol)
-        if choosenVatan:
-            choosenProducts.append(choosenVatan)
-        if choosenN11:
-            choosenProducts.append(choosenN11)
-        if choosenTeknosa:
-            choosenProducts.append(choosenTeknosa)
-
-        return choosenProducts
 
 
 class ProductParamsWithBrands(ListAPIView):
@@ -367,8 +328,6 @@ class ProductParamsScore(ListAPIView):
             return results
 
 
-
-
 class ProductParamsWithCPU(ListAPIView):
     serializer_class = ProductSerializer
 
@@ -384,50 +343,3 @@ class ProductParamsWithCPU(ListAPIView):
                 if query_cpu.lower() in product.computer.cpu.cpu_type.lower():
                     results.append(product)
             return results
-
-
-class ProductsMultiParameters(ListAPIView):
-    serializer_class = ProductSerializer
-
-    def get_queryset(self):
-        results = []
-        query_brands = self.request.query_params.get('brands', None)
-        query_points = self.request.query_params.get('points', None)
-        query_prices_start = self.request.query_params.get('price_start', None)
-        query_prices_end = self.request.query_params.get('price_end', None)
-        query_os = self.request.query_params.get('os', None)
-        query_memory = self.request.query_params.get('memory', None)
-        query_disk_type = self.request.query_params.get('disk_type', None)
-        query_disk_size = self.request.query_params.get('disk_size', None)
-        query_cheapest = self.request.query_params.get('cheap', None)
-        query_expensive = self.request.query_params.get('expensive', None)
-        query_score = self.request.query_params.get('score', None)
-
-        if not query_brands and not query_points and not query_prices_start and not query_prices_end and not query_os and not query_memory and not query_disk_type and not query_disk_size and not query_cheapest and not query_expensive and not query_score:
-            return Product.objects.all()
-        else:
-            for product in Product.objects.all():
-                if query_brands:
-                    if product.computer.brand.name.lower() in query_brands.lower():
-                        results.append(product)
-                if query_points:
-                    if product.score >= float(query_points):
-                        results.append(product)
-                if query_prices_start and query_prices_end:
-                    if float(query_prices_start) <= product.price <= float(query_prices_end):
-                        results.append(product)
-                if query_os:
-                    if product.computer.os.name.lower() in query_os.lower():
-                        results.append(product)
-                if query_memory:
-                    query = query_memory.lower().split(' ')
-                    if product.computer.memory.memory_size.lower() in [i for i in query if i is not None]:
-                        results.append(product)
-                if query_disk_type and query_disk_size:
-                    if product.computer.disk.disk_type.lower().replace(' ',
-                                                                       '') == query_disk_type.lower() and query_disk_size.lower().replace(
-                            ' ', '+') in product.computer.disk.disk_size.lower().replace(' ', ''):
-                        results.append(product)
-            return results
-
-
