@@ -32,7 +32,7 @@ class ComputerListCreate(ListCreateAPIView):
                         print("First computer")
                         continue
                     else:
-                        print("Other computer")
+                        print("Duplicate computer")
                         computer[1].delete()
 
         else:
@@ -83,6 +83,30 @@ class DiskListCreateAPIView(ListCreateAPIView):
     queryset = Disk.objects.all()
     serializer_class = DiskSerializer
 
+    def perform_create(self, serializer):
+        disk_type = self.request.data.get('disk_type').upper()
+        disk_size = self.request.data.get('disk_size').upper().replace(" ", "")
+
+        if 'SSD' and 'HDD' in disk_type:
+            disk_type = 'HDD-SSD'
+
+        if Disk.objects.filter(disk_type=disk_type, disk_size=disk_size).exists():
+            print("Disk already exists")
+            sameDisks = Disk.objects.filter(disk_type=disk_type, disk_size=disk_size)
+            print(sameDisks)
+            if sameDisks.count() > 1:
+                print("There are more than one same disks")
+                for disk in enumerate(sameDisks):
+                    if disk[0] == 0:
+                        print("First disk")
+                        continue
+                    else:
+                        print("Duplicate disk")
+                        disk[1].delete()
+        else:
+            print("Disk does not exist")
+            serializer.save(disk_type=disk_type, disk_size=disk_size.upper().replace(" ", ""))
+
 
 class DiskRetrieve(RetrieveAPIView):
     queryset = Disk.objects.all()
@@ -105,6 +129,26 @@ class DiskDeleteAPIView(RetrieveDestroyAPIView):
 class MemoryListCreateAPIView(ListCreateAPIView):
     queryset = Memory.objects.all()
     serializer_class = MemorySerializer
+
+    def perform_create(self, serializer):
+        memory_size = self.request.data.get('memory_size').upper().replace(" ", "")
+        if Memory.objects.filter(memory_size=memory_size).exists():
+            print("Memory already exists")
+            sameMemory = Memory.objects.filter(memory_size=memory_size)
+            print(sameMemory)
+            if sameMemory.count() > 1:
+                print("There are more than one same memory")
+                for memory in enumerate(sameMemory):
+                    if memory[0] == 0:
+                        print("First memory")
+                        continue
+                    else:
+                        print("Duplicate memory")
+                        memory[1].delete()
+
+        else:
+            print("Memory does not exist")
+            serializer.save(memory_size=memory_size.upper().replace(" ", ""))
 
 
 class MemoryRetrieve(RetrieveAPIView):
