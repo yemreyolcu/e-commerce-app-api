@@ -21,7 +21,7 @@ class ProductCreateAPIView(CreateAPIView):
         if post_image:
             serializer.save(post_image=post_image, image=post_image)
 
-        serializer.save(website="KOU-Tech")
+        serializer.save(website="KOUTech")
 
 
 class ProductListCreate(ListCreateAPIView):
