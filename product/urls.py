@@ -2,7 +2,9 @@ from django.urls import path
 from .views import ProductListCreate, ProductRetrieveAPIView, ProductRetrieveUpdateDestroy, ProductReadyToDeployList, \
     SameProductsListaToModelNumber, SameProductsListaToModelNumberIncludes, ProductParamsWithBrands, \
     ProductParamsWithPoints, ProductParamsWithPrices, ProductParamsWithOS, ProductParamsWithMemory, \
-    ProductParamsWithDisk, ProductParamsCheapest, ProductParamsExpensive, ProductParamsScore, ProductParamsWithCPU, ProductCreateAPIView
+    ProductParamsWithDisk, ProductParamsCheapest, ProductParamsExpensive, ProductParamsScore, ProductParamsWithCPU, \
+    ProductCreateAPIView, ProductParamsWithScreen, ProductMultiFilter
+
 urlpatterns = [
     path('productlistcreate/', ProductListCreate.as_view()),
     path('productretrieve/<int:pk>/', ProductRetrieveAPIView.as_view()),
@@ -20,5 +22,7 @@ urlpatterns = [
     path('productparamsexpensive/', ProductParamsExpensive.as_view()),
     path('productparamsscore/', ProductParamsScore.as_view()),
     path('productparamswithcpu/', ProductParamsWithCPU.as_view()),
+    path('productparamsscreen/', ProductParamsWithScreen.as_view()),
     path('productcreate/', ProductCreateAPIView.as_view()),
+    path('productmultifilter/', ProductMultiFilter.as_view()),
 ]

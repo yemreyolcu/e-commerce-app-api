@@ -12,7 +12,7 @@ class BrandListCreateAPIView(ListCreateAPIView):
     serializer_class = BrandSerializer
 
     def perform_create(self, serializer):
-        name = self.request.data.get('name').upper()
+        name = self.request.data.get('name').upper().replace(" ", "")
         if Brand.objects.filter(name=name).exists():
             print("Brand already exists")
             sameBrands = Brand.objects.filter(name=name)
@@ -28,7 +28,7 @@ class BrandListCreateAPIView(ListCreateAPIView):
                         brand[1].delete()
         else:
             print("Brand does not exist")
-            serializer.save(name=name.upper())
+            serializer.save(name=name.upper().replace(" ", ""))
 
 
 
@@ -56,7 +56,7 @@ class OSListCreateAPIView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         print("OSListCreateAPIView")
-        name = self.request.data.get('name').upper()
+        name = self.request.data.get('name').upper().replace(" ", "")
         if OS.objects.filter(name=name).exists():
             print("OS already exists")
             sameOS = OS.objects.filter(name=name)
@@ -72,7 +72,7 @@ class OSListCreateAPIView(ListCreateAPIView):
                         os[1].delete()
         else:
             print("OS does not exist")
-            serializer.save(name=name.upper())
+            serializer.save(name=name.upper().replace(" ", ""))
 
 
 class OSRetrieveAPIView(RetrieveAPIView):

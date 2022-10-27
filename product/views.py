@@ -1,5 +1,4 @@
 from ngram import NGram
-import string
 from .models import Product
 from computer.models import Computer, CPU, Disk, Memory
 from default.models import Brand, OS
@@ -14,6 +13,15 @@ brands = ["Dell", "Acer", "Apple", "Asus", "HP", "Monster", "Lenovo", "Msi"]
 class ProductCreateAPIView(CreateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
+
+    def perform_create(self, serializer):
+        post_image = self.request.data.get('post_image')
+        product_id = self.request.data.get('id')
+        serializer.save(url="http://localhost:8080/ecommerce/product/" + str(product_id))
+        if post_image:
+            serializer.save(post_image=post_image, image=post_image)
+
+        serializer.save(website="KOU-Tech")
 
 
 class ProductListCreate(ListCreateAPIView):
@@ -182,7 +190,6 @@ class SameProductsListaToModelNumberIncludes(ListAPIView):
     serializer_class = ProductSerializer
 
 
-
 class ProductParamsWithBrands(ListAPIView):
     serializer_class = ProductSerializer
 
@@ -342,4 +349,43 @@ class ProductParamsWithCPU(ListAPIView):
                 print(product.computer.cpu.cpu_type.lower())
                 if query_cpu.lower() in product.computer.cpu.cpu_type.lower():
                     results.append(product)
+            return results
+
+
+class ProductParamsWithScreen(ListAPIView):
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        results = []
+        query_screen = self.request.query_params.get('screen', None)
+        if not query_screen:
+            return Product.objects.all()
+        else:
+            for product in Product.objects.all():
+                if product.computer.screen_size in query_screen:
+                    results.append(product)
+            return results
+
+
+class ProductMultiFilter(ListAPIView):
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        results = []
+        query_brands = self.request.query_params.get('brand', None)
+        query_points = self.request.query_params.get('points', None)
+        query_prices_start = self.request.query_params.get('price_start', None)
+        query_prices_end = self.request.query_params.get('price_end', None)
+        query_os = self.request.query_params.get('os', None)
+        query_memory = self.request.query_params.get('memory', None)
+        query_new_memory = query_memory.lower().split(' ')
+
+        if not query_memory and not query_os and not query_prices_start and not query_prices_end and not query_points and not query_brands:
+            return Product.objects.all()
+        else:
+            for product in Product.objects.all():
+                if product.computer.brand.name.lower() in query_brands.lower() and product.score >= int(query_points) and float(query_prices_start) <= product.price <= float(query_prices_end) and product.computer.os.name.lower() in query_os.lower() and product.computer.memory.memory_size.lower() in [i for i in query_new_memory if i is not None]:
+                    results.append(product)
+                    print("1")
+
             return results
