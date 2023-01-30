@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ecommerce.iml" filepath="$PROJECT_DIR$/.idea/ecommerce.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../readydb/.idea/readydb.iml" filepath="$PROJECT_DIR$/../readydb/.idea/readydb.iml" />
     </modules>
   </component>
 </project>
