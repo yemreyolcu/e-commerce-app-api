@@ -1,4 +1,4 @@
-__init__.py
-0001_initial.py
-images
-
+*/migrations/[0-9]*_*.py
+venv
+.idea
+*pyc
